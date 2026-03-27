@@ -1,5 +1,14 @@
 import { apiSlice } from './apiSlice'
 
+interface RegisterRequest {
+  email: string
+  password: string
+}
+
+interface RegisterResponse {
+  message: string
+}
+
 interface LoginRequest {
   email: string
   password: string
@@ -40,6 +49,13 @@ interface MeResponse {
 
 export const authApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
+    register: builder.mutation<RegisterResponse, RegisterRequest>({
+      query: (body) => ({
+        url: '/auth/register',
+        method: 'POST',
+        body,
+      }),
+    }),
     login: builder.mutation<LoginResponse, LoginRequest>({
       query: (credentials) => ({
         url: '/auth/login',
@@ -68,4 +84,4 @@ export const authApi = apiSlice.injectEndpoints({
   }),
 })
 
-export const { useLoginMutation, useForgotPasswordMutation, useResetPasswordMutation, useGetMeQuery } = authApi
+export const { useRegisterMutation, useLoginMutation, useForgotPasswordMutation, useResetPasswordMutation, useGetMeQuery } = authApi

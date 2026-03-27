@@ -1,28 +1,24 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { useDispatch } from 'react-redux'
 import { Box, Typography } from '@mui/material'
-import { useLoginMutation } from '../store/authApi'
-import { setCredentials } from '../store/authSlice'
+import { useRegisterMutation } from '../store/authApi'
 
 const mono = "'JetBrains Mono', monospace"
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const navigate = useNavigate()
-  const dispatch = useDispatch()
-  const [login, { isLoading, error }] = useLoginMutation()
+  const [register, { isLoading, error }] = useRegisterMutation()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
 
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     try {
-      const result = await login({ email, password }).unwrap()
-      dispatch(setCredentials({ token: result.accessToken, user: result.user }))
-      navigate('/dashboard')
+      await register({ email, password }).unwrap()
+      navigate('/login')
     } catch {
-      // error is available via the `error` variable from useLoginMutation
+      // error is available via the `error` variable from useRegisterMutation
     }
   }
 
@@ -66,11 +62,11 @@ export default function LoginPage() {
         <Typography
           sx={{ fontSize: '24px', fontWeight: 600, color: '#C8D8E8', mb: '1.75rem', textAlign: 'center' }}
         >
-          Login
+          Register
         </Typography>
 
         {/* Form */}
-        <Box component="form" onSubmit={handleLogin}>
+        <Box component="form" onSubmit={handleRegister}>
           {/* Email */}
           <Box sx={{ mb: '1rem' }}>
             <Typography
@@ -112,7 +108,7 @@ export default function LoginPage() {
           </Box>
 
           {/* Password */}
-          <Box sx={{ mb: '0.75rem' }}>
+          <Box sx={{ mb: '1.5rem' }}>
             <Typography
               sx={{
                 fontSize: '9px',
@@ -175,23 +171,6 @@ export default function LoginPage() {
             </Box>
           </Box>
 
-          {/* Forgot password link */}
-          <Box sx={{ textAlign: 'right', mb: '1.5rem' }}>
-            <Box
-              component={Link}
-              to="/forgot-password"
-              sx={{
-                fontSize: '10px',
-                color: '#00C47A',
-                fontFamily: mono,
-                textDecoration: 'none',
-                '&:hover': { textDecoration: 'underline' },
-              }}
-            >
-              Forgot password?
-            </Box>
-          </Box>
-
           {/* Error message */}
           {error && (
             <Typography
@@ -204,12 +183,12 @@ export default function LoginPage() {
               }}
             >
               {'data' in error
-                ? (error.data as { message?: string })?.message || 'Login failed'
+                ? (error.data as { message?: string })?.message || 'Registration failed'
                 : 'Network error. Please try again.'}
             </Typography>
           )}
 
-          {/* Login button */}
+          {/* Register button */}
           <Box
             component="button"
             type="submit"
@@ -230,26 +209,26 @@ export default function LoginPage() {
               '&:hover': { background: isLoading ? '#0D1F16' : '#142A1E' },
             }}
           >
-            {isLoading ? 'Logging in...' : 'Login'}
+            {isLoading ? 'Registering...' : 'Register'}
           </Box>
         </Box>
 
-        {/* Register link */}
+        {/* Login link */}
         <Box sx={{ textAlign: 'center', mt: '1.25rem' }}>
           <Typography
             sx={{ fontSize: '11px', color: '#3D4A5A', fontFamily: mono }}
           >
-            Don't have an account?{' '}
+            Already have an account?{' '}
             <Box
               component={Link}
-              to="/register"
+              to="/login"
               sx={{
                 color: '#00C47A',
                 textDecoration: 'none',
                 '&:hover': { textDecoration: 'underline' },
               }}
             >
-              Register
+              Login
             </Box>
           </Typography>
         </Box>

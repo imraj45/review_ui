@@ -1,4 +1,5 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
+import RegisterPage from './pages/RegisterPage'
 import LoginPage from './pages/LoginPage'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
@@ -11,6 +12,10 @@ const router = createBrowserRouter([
   {
     path: '/',
     element: <Navigate to="/dashboard" replace />,
+  },
+  {
+    path: '/register',
+    element: <PublicRoute><RegisterPage /></PublicRoute>,
   },
   {
     path: '/login',
