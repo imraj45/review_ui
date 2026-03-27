@@ -1,14 +1,16 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
-import { Box, Typography } from '@mui/material'
+import { Box, Typography, CircularProgress } from '@mui/material'
 import { platforms } from '../data/platforms'
 import { logout } from '../store/authSlice'
+import { useGetMeQuery } from '../store/authApi'
 
 const mono = "'JetBrains Mono', monospace"
 
 export default function ProfilePage() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  const { data: user, isLoading, error } = useGetMeQuery()
 
   const handleLogout = () => {
     dispatch(logout())
@@ -98,75 +100,94 @@ export default function ProfilePage() {
         </Box>
 
         {/* Profile card */}
-        <Box
-          sx={{
-            background: '#111520',
-            border: '1px solid #1E2530',
-            borderRadius: '10px',
-            padding: '1.25rem',
-            mb: '1.25rem',
-          }}
-        >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: '14px', mb: '1.25rem', pb: '1rem', borderBottom: '1px solid #1E2530' }}>
-            {/* Avatar */}
-            <Box
-              sx={{
-                width: 48, height: 48, borderRadius: '50%',
-                background: '#0D1F16', border: '2px solid #00C47A',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '18px', fontWeight: 700, color: '#00C47A',
-                fontFamily: mono, flexShrink: 0,
-              }}
-            >
-              SK
-            </Box>
-            <Box>
-              <Typography sx={{ fontSize: '16px', fontWeight: 600, color: '#C8D8E8' }}>
-                Sarah K.
-              </Typography>
-              <Typography sx={{ fontSize: '11px', color: '#3D4A5A', fontFamily: mono }}>
-                team_member
-              </Typography>
-            </Box>
+        {isLoading ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', py: '3rem' }}>
+            <CircularProgress size={28} sx={{ color: '#00C47A' }} />
           </Box>
-
-          {/* Info fields */}
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {[
-              { label: 'Email', value: 'sarah.k@sniffer.io' },
-              { label: 'Role', value: 'Team Member' },
-              { label: 'Department', value: 'DevOps / Security' },
-              { label: 'Joined', value: 'October 2025' },
-            ].map((item) => (
+        ) : error ? (
+          <Box
+            sx={{
+              background: '#1A0A0A',
+              border: '1px solid #FF492C40',
+              borderRadius: '10px',
+              padding: '1.25rem',
+              mb: '1.25rem',
+            }}
+          >
+            <Typography sx={{ fontSize: '12.5px', color: '#FF492C', fontFamily: mono }}>
+              Failed to load profile. Please try again.
+            </Typography>
+          </Box>
+        ) : user ? (
+          <Box
+            sx={{
+              background: '#111520',
+              border: '1px solid #1E2530',
+              borderRadius: '10px',
+              padding: '1.25rem',
+              mb: '1.25rem',
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: '14px', mb: '1.25rem', pb: '1rem', borderBottom: '1px solid #1E2530' }}>
+              {/* Avatar */}
               <Box
-                key={item.label}
                 sx={{
-                  background: '#0C0E11',
-                  border: '1px solid #1E2530',
-                  borderRadius: '8px',
-                  overflow: 'hidden',
+                  width: 48, height: 48, borderRadius: '50%',
+                  background: '#0D1F16', border: '2px solid #00C47A',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: '18px', fontWeight: 700, color: '#00C47A',
+                  fontFamily: mono, flexShrink: 0,
                 }}
               >
-                <Typography
-                  sx={{
-                    fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.1em',
-                    color: '#3D4A5A', padding: '8px 12px 0', fontFamily: mono,
-                  }}
-                >
-                  {item.label}
+                {user.email.split('@')[0].replace(/[+.]/g, ' ').split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)}
+              </Box>
+              <Box>
+                <Typography sx={{ fontSize: '16px', fontWeight: 600, color: '#C8D8E8', textTransform: 'capitalize' }}>
+                  {user.email.split('@')[0].replace(/[+.]/g, ' ')}
                 </Typography>
-                <Typography
-                  sx={{
-                    fontSize: '12.5px', color: '#A0B4C8', padding: '4px 12px 10px',
-                    lineHeight: 1.6,
-                  }}
-                >
-                  {item.value}
+                <Typography sx={{ fontSize: '11px', color: '#3D4A5A', fontFamily: mono }}>
+                  {user.role}
                 </Typography>
               </Box>
-            ))}
+            </Box>
+
+            {/* Info fields */}
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {[
+                { label: 'Name', value: user.email.split('@')[0].replace(/[+.]/g, ' ') },
+                { label: 'Email', value: user.email },
+                { label: 'Role', value: user.role },
+              ].map((item) => (
+                <Box
+                  key={item.label}
+                  sx={{
+                    background: '#0C0E11',
+                    border: '1px solid #1E2530',
+                    borderRadius: '8px',
+                    overflow: 'hidden',
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.1em',
+                      color: '#3D4A5A', padding: '8px 12px 0', fontFamily: mono,
+                    }}
+                  >
+                    {item.label}
+                  </Typography>
+                  <Typography
+                    sx={{
+                      fontSize: '12.5px', color: '#A0B4C8', padding: '4px 12px 10px',
+                      lineHeight: 1.6,
+                    }}
+                  >
+                    {item.value}
+                  </Typography>
+                </Box>
+              ))}
+            </Box>
           </Box>
-        </Box>
+        ) : null}
 
         {/* Review history */}
         <Box

@@ -32,6 +32,12 @@ interface ResetPasswordResponse {
   message: string
 }
 
+interface MeResponse {
+  userId: string
+  email: string
+  role: string
+}
+
 export const authApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     login: builder.mutation<LoginResponse, LoginRequest>({
@@ -56,7 +62,10 @@ export const authApi = apiSlice.injectEndpoints({
         body,
       }),
     }),
+    getMe: builder.query<MeResponse, void>({
+      query: () => '/auth/me',
+    }),
   }),
 })
 
-export const { useLoginMutation, useForgotPasswordMutation, useResetPasswordMutation } = authApi
+export const { useLoginMutation, useForgotPasswordMutation, useResetPasswordMutation, useGetMeQuery } = authApi
